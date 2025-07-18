@@ -1,5 +1,8 @@
+**.npy
 **.csv
-
+**/checkpoints/*
+!**/checkpoints/*_best.pt
+**/runs/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
