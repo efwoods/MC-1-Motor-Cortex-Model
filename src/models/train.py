@@ -10,6 +10,7 @@ from variational_motion_encoder import VariationalMotionEncoder
 from waveform_decoder import WaveformDecoder
 from waveform_encoder import WaveformEncoder
 from variational_waveform_encoder import VariationalWaveformEncoder
+
 from motion_decoder import MotionDecoder
 from loss import total_loss_fn, kl_anneal_function
 
@@ -62,16 +63,23 @@ def train(
     save_every=10,
     checkpoint_dir="checkpoints",
     log_dir="runs",
-    val_split=0.1,
+    val_split=0.2,
+    test_split=0.1,
     early_stopping_patience=10,
 ):
     best_val_loss = float("inf")
     epochs_no_improve = 0
     # Prepare dataset
     dataset = MotionECoGDataset(motion_np, ecog_np)
-    val_size = int(val_split * len(dataset))
-    train_size = len(dataset) - val_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    total_length = len(dataset)
+    test_size = int(test_split * total_length)
+    remaining_size = total_length - test_size
+    val_size = int(val_split * remaining_size)
+    train_size = remaining_size - val_size
+
+    train_dataset, val_dataset, test_dataset = random_split(
+        dataset, [train_size, val_size, test_size]
+    )
 
     train_loader = DataLoader(
         train_dataset, batch_size=batch_size, shuffle=True, drop_last=True
@@ -79,6 +87,12 @@ def train(
     val_loader = DataLoader(
         val_dataset, batch_size=batch_size, shuffle=False, drop_last=True
     )
+    test_loader = DataLoader(
+        test_dataset, batch_size=batch_size, shuffle=False, drop_last=False
+    )
+
+    # Save the test_dataset indices
+    torch.save(test_dataset.indices, "test_indices.pt")
 
     # Initialize models
     latent_dim = 128
@@ -111,7 +125,6 @@ def train(
         optimizer, mode="min", factor=0.5, patience=5, min_lr=1e-6
     )
 
-    # Create folders
     os.makedirs(checkpoint_dir, exist_ok=True)
     run_id = time.strftime("%Y%m%d-%H%M%S")
     writer = SummaryWriter(log_dir=os.path.join(log_dir, run_id))
