@@ -1,11 +1,15 @@
+"""
+Accepts Waveform Latents. (B, 128)
+
+Returns:
+    3-D Motion (B, 3)
+"""
+
 import torch
 import torch.nn as nn
 
 
 class MotionDecoder(nn.Module):
-    """
-    Accepts Waveform Latents and recreates Motion
-    """
 
     def __init__(self, latent_dim=128):
         super().__init__()

@@ -12,7 +12,9 @@ class MotionEncoder(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(3, 64),
             nn.ReLU(),
-            nn.Linear(64, latent_dim),
+            nn.Linear(64, 128),
+            nn.ReLU(),
+            nn.Linear(128, latent_dim),
             nn.LayerNorm(latent_dim),
         )
 
