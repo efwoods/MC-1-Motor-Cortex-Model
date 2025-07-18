@@ -10,6 +10,7 @@ from variational_motion_encoder import VariationalMotionEncoder
 from waveform_decoder import WaveformDecoder
 from waveform_encoder import WaveformEncoder
 from variational_waveform_encoder import VariationalWaveformEncoder
+
 from motion_decoder import MotionDecoder
 from loss import total_loss_fn, kl_anneal_function
 
@@ -91,7 +92,7 @@ def train(
     )
 
     # Save the test_dataset indices
-    torch.save({"test_indices": test_dataset.indices}, "test_indices.pt")
+    torch.save(test_dataset.indices, "test_indices.pt")
 
     # Initialize models
     latent_dim = 128
