@@ -20,7 +20,7 @@ class SpasmDataset(torch.utils.data.Dataset):
     def __init__(self, spasm_data, spasm_indices, ecog_synth_spasms=None):
         self.spasm_data = spasm_data
         self.spasm_indices = spasm_indices
-        self.ecog_synth_spams = ecog_synth_spasms
+        self.ecog_synth_spasms = ecog_synth_spasms
 
     def __len__(self):
         return len(self.spasm_data)
